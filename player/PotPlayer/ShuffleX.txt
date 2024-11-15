@@ -1,0 +1,36 @@
+// PotPlayer HLSL Filter for Image Shuffling
+
+sampler2D s0 : register(s0);
+float4 p0 : register(c0);
+float4 p1 : register(c1);
+
+#define width  p0.x
+#define height p0.y
+#define random_seed 42
+#define grid_size 40
+
+float random(float2 st) {
+    return frac(sin(dot(st, float2(12.9898, 78.233)) + random_seed) * 43758.5453123);
+}
+
+float4 main(float2 tex : TEXCOORD0) : COLOR {
+    // 输入画布的大小，单位是 px
+    float2 resolution = float2(width, height);
+    // 格子数量
+    float2 gridCount = resolution / grid_size;
+    float totalCells = gridCount.x * gridCount.y;
+
+    // 计算网格坐标
+    float2 grid = floor(tex * resolution / grid_size);
+    float2 gridUV = frac(tex * resolution / grid_size);
+
+    // XY 偏移，单位是 Tile
+    float x_random_offset = floor(random(float2(114.0, 514.0) + sin(grid.y)) * gridCount.x);
+    float2 xy_offset = fmod(grid + float2(x_random_offset, 0) , gridCount);
+
+    // 计算新的UV坐标
+    float2 newUV = (xy_offset + gridUV) * grid_size / resolution;
+
+    // 采样并返回颜色
+    return tex2D(s0, newUV);
+}
