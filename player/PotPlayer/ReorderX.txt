@@ -26,7 +26,7 @@ float4 main(float2 tex : TEXCOORD0) : COLOR {
 
     // XY 偏移，单位是 Tile
     float x_random_offset = random(base_x + grid.y, gridCount.x);
-    float x_offset = fmod(grid.x + gridCount.x - x_random_offset, gridCount.x)
+    float x_offset = fmod(grid.x + gridCount.x - x_random_offset, gridCount.x);
     float2 xy_offset = float2(x_offset, grid.y);
 
     // 计算新的UV坐标
