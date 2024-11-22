@@ -47,8 +47,8 @@ pixel_data VSDefault(vertex_data vertex)
 }
 
 // 伪随机函数
-float random(float2 st) {
-	return frac(sin(dot(st, float2(12.9898,78.233)) + random_seed) * 43758.5453123);
+float random(float2 st, float gs) {
+	return floor(fmod(fmod(123456789., random_seed * dot(st, float2(23.1406,2.6651))), gs));
 }
 
 float4 PSDefault(pixel_data pixel) : TARGET
@@ -59,16 +59,15 @@ float4 PSDefault(pixel_data pixel) : TARGET
 	float2 resolution = float2(width, height);
 	// 格子数量
 	float2 gridCount = resolution / grid_size;
-	float totalCells = gridCount.x * gridCount.y;
 
 	// 计算网格坐标
 	float2 grid = floor(uv * resolution / grid_size);
 	float2 gridUV = frac(uv * resolution / grid_size);
 
 	// XY 偏移，单位是 Tile
-	float x_random_offset = floor(random(float2(114.0, 514.0) + sin(grid.y)) * gridCount.x);
-	// float y_random_offset = floor(random(float2(1919.0, 810.0) + cos(grid.x)) * gridCount.y);
-	float2 xy_offset = fmod(grid + gridCount - float2(x_random_offset, 0), gridCount);
+	float x_random_offset = random(float2(114.0, 514.0) + grid.y, gridCount.x);
+	float x_offset = fmod(grid.x + gridCount.x - x_random_offset, gridCount.x);
+	float2 xy_offset = float2(x_offset, grid.y);
 
 	// 计算新的UV坐标
 	float2 newUV = (xy_offset + gridUV) * grid_size / resolution;

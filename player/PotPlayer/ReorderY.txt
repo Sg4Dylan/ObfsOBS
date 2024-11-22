@@ -6,11 +6,12 @@ float4 p1 : register(c1);
 
 #define width  p0.x
 #define height p0.y
-#define random_seed 42
+#define random_seed 42.0
 #define grid_size 40
+#define base_y float2(1919.0, 810.0)
 
-float random(float2 st) {
-    return frac(sin(dot(st, float2(12.9898, 78.233)) + random_seed) * 43758.5453123);
+float random(float2 st, float gs) {
+    return floor(fmod(fmod(123456789., random_seed * dot(st, float2(23.1406,2.6651))), gs));
 }
 
 float4 main(float2 tex : TEXCOORD0) : COLOR {
@@ -18,15 +19,15 @@ float4 main(float2 tex : TEXCOORD0) : COLOR {
     float2 resolution = float2(width, height);
     // 格子数量
     float2 gridCount = resolution / grid_size;
-    float totalCells = gridCount.x * gridCount.y;
 
     // 计算网格坐标
     float2 grid = floor(tex * resolution / grid_size);
     float2 gridUV = frac(tex * resolution / grid_size);
 
     // XY 偏移，单位是 Tile
-    float y_random_offset = floor(random(float2(114.0, 514.0) + cos(grid.x)) * gridCount.y);
-    float2 xy_offset = fmod(grid + gridCount - float2(0, y_random_offset), gridCount);
+    float y_random_offset = random(base_y + grid.x, gridCount.y);
+    float y_offset = fmod(grid.y + gridCount.y - y_random_offset, gridCount.y);
+    float2 xy_offset = float2(grid.x, y_offset);
 
     // 计算新的UV坐标
     float2 newUV = (xy_offset + gridUV) * grid_size / resolution;
