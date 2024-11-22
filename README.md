@@ -94,6 +94,10 @@ De-obfuscation is the process of reversing the effects of obfuscation. While obf
 3. In the Stack list, locate and check the boxes corresponding to the filters "ReorderX" and "ReorderY" in that
    specific order.
 
+## Limitation
+Due to the differences in pseudo-random function calculation results caused by computational precision on different rendering engines, de-obfuscate may not be able to fully restore the image under certain settings.
+
 ## TODO
  * [x] Support Daum PotPlayer
+ * [ ] Find a more stable pseudorandom function
  * [ ] Support mpv
